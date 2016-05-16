@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="GroupChatImageView">
+        <attr name="firstImage" format="integer" />
+        <attr name="secondImage" format="integer" />
+        <attr name="thirdImage" format="integer" />
+        <attr name="fourthImage" format="integer" />
+        <attr name="dividerColor" format="color" />
+        <attr name="dividerWidth" format="dimension" />
+        <attr name="showDivider" format="boolean" />
+        <attr name="cornerRadius" format="dimension" />
+        <attr name="viewShape" format="enum">
+            <enum name="circle" value="0" />
+            <enum name="rounded_rectangle" value="1" />
+        </attr>
+    </declare-styleable>
+</resources>

@@ -1,6 +1,7 @@
 package com.groupchatimageview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
@@ -8,6 +9,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -24,21 +27,51 @@ public class GroupChatImageView extends ImageView {
     public GroupChatImageView(Context context) {
         super(context);
         init();
-        setup();
     }
 
     public GroupChatImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.GroupChatImageView, 0, 0);
+        try {
+            Drawable firstImageDrawable = a.getDrawable(R.styleable.GroupChatImageView_firstImage);
+            if (firstImageDrawable != null) {
+                mFirstBitmap = ((BitmapDrawable) firstImageDrawable).getBitmap();
+                this.setImageBitmap(mFirstBitmap);
+            }
+            Drawable secondImageDrawable = a.getDrawable(R.styleable.GroupChatImageView_secondImage);
+            if (secondImageDrawable != null) {
+                mSecondBitmap = ((BitmapDrawable) secondImageDrawable).getBitmap();
+            }
+            Drawable thirdImageDrawable = a.getDrawable(R.styleable.GroupChatImageView_thirdImage);
+            if (thirdImageDrawable != null) {
+                mThirdBitmap = ((BitmapDrawable) thirdImageDrawable).getBitmap();
+            }
+            Drawable fourthImageDrawable = a.getDrawable(R.styleable.GroupChatImageView_fourthImage);
+            if (fourthImageDrawable != null) {
+                mFourthBitmap = ((BitmapDrawable) fourthImageDrawable).getBitmap();
+            }
+
+        } finally {
+            a.recycle();
+        }
         init();
-        setup();
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //make view square
-        mSize = Math.min(getMeasuredWidth(), getMeasuredHeight());
-        setMeasuredDimension(mSize, mSize);
+        int width = getMeasuredWidth();
+        int height = getMeasuredHeight();
+        int widthWithoutPadding = width - getPaddingLeft() - getPaddingRight();
+        int heigthWithoutPadding = height - getPaddingTop() - getPaddingBottom();
+
+        // set the dimensions
+        if (widthWithoutPadding > heigthWithoutPadding) {
+            mSize = heigthWithoutPadding;
+        } else {
+            mSize = widthWithoutPadding;
+        }
+        setMeasuredDimension(mSize + getPaddingLeft() + getPaddingRight(), mSize + getPaddingTop() + getPaddingBottom());
     }
 
     @Override
@@ -154,12 +187,14 @@ public class GroupChatImageView extends ImageView {
         }
         setup();
     }
+
     @Override
     public void setScaleType(ScaleType scaleType) {
         if (scaleType != getScaleType()) {
             throw new IllegalArgumentException(String.format("ScaleType %s not supported.", scaleType));
         }
     }
+
     @Override
     public void setAdjustViewBounds(boolean adjustViewBounds) {
         if (adjustViewBounds) {
