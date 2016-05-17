@@ -17,14 +17,20 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 public class GroupChatImageView extends ImageView {
+    private static final int DEFAULT_DIVIDER_WIDTH = 1;
+    private static final int DEFAULT_DIVIDER_COLOR = Color.WHITE;
     private Bitmap mFirstBitmap;
     private Bitmap mSecondBitmap;
     private Bitmap mThirdBitmap;
     private Bitmap mFourthBitmap;
     private BitmapShader mBitmapShader;
-    private Paint mPaint;
+    private Paint mBitmapPaint;
+    private Paint mDividerPaint;
     private int mSize;
     private float mCornerRadius;
+    private boolean mShowDivider = false;
+    private int mDividerWidth;
+    private int mDividerColor;
     private ShapeMode shapeMode = ShapeMode.CIRCLE;
 
     public enum ShapeMode {
@@ -63,12 +69,18 @@ public class GroupChatImageView extends ImageView {
                 shapeMode = ShapeMode.ROUNDED_RECTANGLE;
             }
             mCornerRadius = a.getDimensionPixelSize(R.styleable.GroupChatImageView_cornerRadius, 0);
+            mShowDivider = a.getBoolean(R.styleable.GroupChatImageView_showDivider, false);
+            if (mShowDivider) {
+                mDividerWidth = a.getDimensionPixelSize(R.styleable.GroupChatImageView_dividerWidth, DEFAULT_DIVIDER_WIDTH);
+                mDividerColor = a.getColor(R.styleable.GroupChatImageView_dividerColor, DEFAULT_DIVIDER_COLOR);
+            }
         } finally {
             a.recycle();
         }
         init();
     }
 
+    //TODO padding, min height!!!
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -87,16 +99,19 @@ public class GroupChatImageView extends ImageView {
         int cx = (getWidth() - getPaddingLeft() - getPaddingRight()) / 2 + getPaddingLeft();
         int cy = (getHeight() - getPaddingTop() - getPaddingBottom()) / 2 + getPaddingTop();
         if (shapeMode == ShapeMode.CIRCLE) {
-            canvas.drawCircle(cx, cy, mSize / 2, mPaint);
+            canvas.drawCircle(cx, cy, mSize / 2, mBitmapPaint);
         } else {
             RectF rectF = new RectF((float) (cx - mSize / 2), (float) (cy - mSize / 2), (float) (cx + mSize / 2), (float) (cy + mSize / 2));
-            canvas.drawRoundRect(rectF, mCornerRadius, mCornerRadius, mPaint);
+            canvas.drawRoundRect(rectF, mCornerRadius, mCornerRadius, mBitmapPaint);
         }
     }
 
 
     public void init() {
-        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mBitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mDividerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mDividerPaint.setColor(mDividerColor);
+        mDividerPaint.setStrokeWidth(mDividerWidth);
     }
 
     public void setShapeMode(ShapeMode shapeMode) {
@@ -107,21 +122,22 @@ public class GroupChatImageView extends ImageView {
         if (mFirstBitmap != null && mSecondBitmap == null && mThirdBitmap == null && mFourthBitmap == null) {
             Bitmap cuttedFirstBitmap = ThumbnailUtils.extractThumbnail(mFirstBitmap, mSize, mSize);
             mBitmapShader = new BitmapShader(cuttedFirstBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-            mPaint.setShader(mBitmapShader);
+            mBitmapPaint.setShader(mBitmapShader);
         } else if (mFirstBitmap != null && mSecondBitmap != null && mThirdBitmap == null && mFourthBitmap == null) {
-            Bitmap cuttedFirstBitmap = ThumbnailUtils.extractThumbnail(mFirstBitmap, mSize / 2, mSize);
-            Bitmap cuttedSecondBitmap = ThumbnailUtils.extractThumbnail(mSecondBitmap, mSize / 2, mSize);
+            Bitmap cuttedFirstBitmap = ThumbnailUtils.extractThumbnail(mFirstBitmap, (mSize - mDividerWidth) / 2, mSize);
+            Bitmap cuttedSecondBitmap = ThumbnailUtils.extractThumbnail(mSecondBitmap, (mSize - mDividerWidth) / 2, mSize);
             Rect firstDstRect = new Rect();
-            firstDstRect.set(0, 0, mSize / 2, mSize);
+            firstDstRect.set(0, 0, (mSize - mDividerWidth) / 2, mSize);
             Rect secondDstRect = new Rect();
-            secondDstRect.set(mSize / 2, 0, mSize, mSize);
+            secondDstRect.set((mSize - mDividerWidth) / 2, 0, mSize, mSize);
 
             Bitmap resultBitmap = Bitmap.createBitmap(mSize, mSize, Bitmap.Config.ARGB_8888);
             Canvas resultBitmapCanvas = new Canvas(resultBitmap);
-            resultBitmapCanvas.drawBitmap(cuttedFirstBitmap, null, firstDstRect, mPaint);
-            resultBitmapCanvas.drawBitmap(cuttedSecondBitmap, null, secondDstRect, mPaint);
+            resultBitmapCanvas.drawBitmap(cuttedFirstBitmap, null, firstDstRect, mBitmapPaint);
+            resultBitmapCanvas.drawBitmap(cuttedSecondBitmap, null, secondDstRect, mBitmapPaint);
+            resultBitmapCanvas.drawLine(mSize / 2, 0, mSize / 2, mSize, mDividerPaint);
             mBitmapShader = new BitmapShader(resultBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-            mPaint.setShader(mBitmapShader);
+            mBitmapPaint.setShader(mBitmapShader);
         } else if (mFirstBitmap != null && mSecondBitmap != null && mThirdBitmap != null && mFourthBitmap == null) {
             Bitmap cuttedFirstBitmap = ThumbnailUtils.extractThumbnail(mFirstBitmap, mSize / 2, mSize);
             Bitmap cuttedSecondBitmap = ThumbnailUtils.extractThumbnail(mSecondBitmap, mSize / 2, mSize / 2);
@@ -135,11 +151,11 @@ public class GroupChatImageView extends ImageView {
 
             Bitmap resultBitmap = Bitmap.createBitmap(mSize, mSize, Bitmap.Config.ARGB_8888);
             Canvas resultBitmapCanvas = new Canvas(resultBitmap);
-            resultBitmapCanvas.drawBitmap(cuttedFirstBitmap, null, firstDstRect, mPaint);
-            resultBitmapCanvas.drawBitmap(cuttedSecondBitmap, null, secondDstRect, mPaint);
-            resultBitmapCanvas.drawBitmap(cuttedThirdBitmap, null, thirdDstRect, mPaint);
+            resultBitmapCanvas.drawBitmap(cuttedFirstBitmap, null, firstDstRect, mBitmapPaint);
+            resultBitmapCanvas.drawBitmap(cuttedSecondBitmap, null, secondDstRect, mBitmapPaint);
+            resultBitmapCanvas.drawBitmap(cuttedThirdBitmap, null, thirdDstRect, mBitmapPaint);
             mBitmapShader = new BitmapShader(resultBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-            mPaint.setShader(mBitmapShader);
+            mBitmapPaint.setShader(mBitmapShader);
         } else if (mFirstBitmap != null && mSecondBitmap != null && mThirdBitmap != null && mFourthBitmap != null) {
             Bitmap cuttedFirstBitmap = ThumbnailUtils.extractThumbnail(mFirstBitmap, mSize / 2, mSize / 2);
             Bitmap cuttedSecondBitmap = ThumbnailUtils.extractThumbnail(mSecondBitmap, mSize / 2, mSize / 2);
@@ -156,14 +172,14 @@ public class GroupChatImageView extends ImageView {
 
             Bitmap resultBitmap = Bitmap.createBitmap(mSize, mSize, Bitmap.Config.ARGB_8888);
             Canvas resultBitmapCanvas = new Canvas(resultBitmap);
-            resultBitmapCanvas.drawBitmap(cuttedFirstBitmap, null, firstDstRect, mPaint);
-            resultBitmapCanvas.drawBitmap(cuttedSecondBitmap, null, secondDstRect, mPaint);
-            resultBitmapCanvas.drawBitmap(cuttedThirdBitmap, null, thirdDstRect, mPaint);
-            resultBitmapCanvas.drawBitmap(cuttedFourthBitmap, null, fourthDstRect, mPaint);
+            resultBitmapCanvas.drawBitmap(cuttedFirstBitmap, null, firstDstRect, mBitmapPaint);
+            resultBitmapCanvas.drawBitmap(cuttedSecondBitmap, null, secondDstRect, mBitmapPaint);
+            resultBitmapCanvas.drawBitmap(cuttedThirdBitmap, null, thirdDstRect, mBitmapPaint);
+            resultBitmapCanvas.drawBitmap(cuttedFourthBitmap, null, fourthDstRect, mBitmapPaint);
             mBitmapShader = new BitmapShader(resultBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-            mPaint.setShader(mBitmapShader);
+            mBitmapPaint.setShader(mBitmapShader);
         } else {
-            mPaint.setColor(Color.TRANSPARENT);
+            mBitmapPaint.setColor(Color.TRANSPARENT);
         }
     }
 

@@ -7,12 +7,15 @@
     tools:context="com.groupchatimageview.MainActivity">
 
     <com.groupchatimageview.GroupChatImageView
-        android:layout_width="300dp"
+        android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_centerInParent="true"
         custom:firstImage="@drawable/me"
-        custom:fourthImage="@drawable/alex2"
         custom:secondImage="@drawable/me2"
-        custom:thirdImage="@drawable/alex"
-        custom:viewShape="circle"/>
+        custom:viewShape="rounded_rectangle"
+        custom:cornerRadius="100dp"
+        custom:dividerWidth="3dp"
+        custom:dividerColor="@color/colorAccent"
+        custom:showDivider="true"
+        />
 </RelativeLayout>
