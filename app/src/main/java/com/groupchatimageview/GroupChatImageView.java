@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -23,6 +24,13 @@ public class GroupChatImageView extends ImageView {
     private BitmapShader mBitmapShader;
     private Paint mPaint;
     private int mSize;
+    private float mCornerRadius;
+    private ShapeMode shapeMode = ShapeMode.CIRCLE;
+
+    public enum ShapeMode {
+        CIRCLE, ROUNDED_RECTANGLE;
+
+    }
 
     public GroupChatImageView(Context context) {
         super(context);
@@ -50,7 +58,11 @@ public class GroupChatImageView extends ImageView {
             if (fourthImageDrawable != null) {
                 mFourthBitmap = ((BitmapDrawable) fourthImageDrawable).getBitmap();
             }
-
+            int shapeModeValue = a.getInt(R.styleable.GroupChatImageView_viewShape, 0);
+            if (shapeModeValue == 1) {
+                shapeMode = ShapeMode.ROUNDED_RECTANGLE;
+            }
+            mCornerRadius = a.getDimensionPixelSize(R.styleable.GroupChatImageView_cornerRadius, 0);
         } finally {
             a.recycle();
         }
@@ -60,18 +72,8 @@ public class GroupChatImageView extends ImageView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int width = getMeasuredWidth();
-        int height = getMeasuredHeight();
-        int widthWithoutPadding = width - getPaddingLeft() - getPaddingRight();
-        int heigthWithoutPadding = height - getPaddingTop() - getPaddingBottom();
-
-        // set the dimensions
-        if (widthWithoutPadding > heigthWithoutPadding) {
-            mSize = heigthWithoutPadding;
-        } else {
-            mSize = widthWithoutPadding;
-        }
-        setMeasuredDimension(mSize + getPaddingLeft() + getPaddingRight(), mSize + getPaddingTop() + getPaddingBottom());
+        mSize = getMeasuredWidth();
+        setMeasuredDimension(mSize, mSize);
     }
 
     @Override
@@ -82,11 +84,23 @@ public class GroupChatImageView extends ImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawCircle(mSize / 2, mSize / 2, mSize / 2, mPaint);
+        int cx = (getWidth() - getPaddingLeft() - getPaddingRight()) / 2 + getPaddingLeft();
+        int cy = (getHeight() - getPaddingTop() - getPaddingBottom()) / 2 + getPaddingTop();
+        if (shapeMode == ShapeMode.CIRCLE) {
+            canvas.drawCircle(cx, cy, mSize / 2, mPaint);
+        } else {
+            RectF rectF = new RectF((float) (cx - mSize / 2), (float) (cy - mSize / 2), (float) (cx + mSize / 2), (float) (cy + mSize / 2));
+            canvas.drawRoundRect(rectF, mCornerRadius, mCornerRadius, mPaint);
+        }
     }
+
 
     public void init() {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    }
+
+    public void setShapeMode(ShapeMode shapeMode) {
+        this.shapeMode = shapeMode;
     }
 
     public void setup() {

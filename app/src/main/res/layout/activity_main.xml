@@ -13,6 +13,6 @@
         custom:firstImage="@drawable/me"
         custom:fourthImage="@drawable/alex2"
         custom:secondImage="@drawable/me2"
-        android:background="@android:color/holo_red_dark"
-        custom:thirdImage="@drawable/alex" />
+        custom:thirdImage="@drawable/alex"
+        custom:viewShape="circle"/>
 </RelativeLayout>
