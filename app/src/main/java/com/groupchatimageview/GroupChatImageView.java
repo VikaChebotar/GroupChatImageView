@@ -17,7 +17,7 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 public class GroupChatImageView extends ImageView {
-    private static final int DEFAULT_DIVIDER_WIDTH = 1;
+    private static final int DEFAULT_DIVIDER_WIDTH = 2;
     private static final int DEFAULT_DIVIDER_COLOR = Color.WHITE;
     private Bitmap mFirstBitmap;
     private Bitmap mSecondBitmap;
@@ -129,7 +129,7 @@ public class GroupChatImageView extends ImageView {
             Rect firstDstRect = new Rect();
             firstDstRect.set(0, 0, (mSize - mDividerWidth) / 2, mSize);
             Rect secondDstRect = new Rect();
-            secondDstRect.set((mSize - mDividerWidth) / 2, 0, mSize, mSize);
+            secondDstRect.set((mSize + mDividerWidth) / 2, 0, mSize, mSize);
 
             Bitmap resultBitmap = Bitmap.createBitmap(mSize, mSize, Bitmap.Config.ARGB_8888);
             Canvas resultBitmapCanvas = new Canvas(resultBitmap);
@@ -139,36 +139,38 @@ public class GroupChatImageView extends ImageView {
             mBitmapShader = new BitmapShader(resultBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
             mBitmapPaint.setShader(mBitmapShader);
         } else if (mFirstBitmap != null && mSecondBitmap != null && mThirdBitmap != null && mFourthBitmap == null) {
-            Bitmap cuttedFirstBitmap = ThumbnailUtils.extractThumbnail(mFirstBitmap, mSize / 2, mSize);
-            Bitmap cuttedSecondBitmap = ThumbnailUtils.extractThumbnail(mSecondBitmap, mSize / 2, mSize / 2);
-            Bitmap cuttedThirdBitmap = ThumbnailUtils.extractThumbnail(mThirdBitmap, mSize / 2, mSize / 2);
+            Bitmap cuttedFirstBitmap = ThumbnailUtils.extractThumbnail(mFirstBitmap, (mSize - mDividerWidth) / 2, mSize);
+            Bitmap cuttedSecondBitmap = ThumbnailUtils.extractThumbnail(mSecondBitmap, (mSize - mDividerWidth) / 2, (mSize - mDividerWidth) / 2);
+            Bitmap cuttedThirdBitmap = ThumbnailUtils.extractThumbnail(mThirdBitmap, (mSize - mDividerWidth) / 2, (mSize - mDividerWidth) / 2);
             Rect firstDstRect = new Rect();
-            firstDstRect.set(0, 0, mSize / 2, mSize);
+            firstDstRect.set(0, 0, (mSize - mDividerWidth) / 2, mSize);
             Rect secondDstRect = new Rect();
-            secondDstRect.set(mSize / 2, 0, mSize, mSize / 2);
+            secondDstRect.set((mSize + mDividerWidth) / 2, 0, mSize, (mSize - mDividerWidth) / 2);
             Rect thirdDstRect = new Rect();
-            thirdDstRect.set(mSize / 2, mSize / 2, mSize, mSize);
+            thirdDstRect.set((mSize + mDividerWidth) / 2, (mSize + mDividerWidth) / 2, mSize, mSize);
 
             Bitmap resultBitmap = Bitmap.createBitmap(mSize, mSize, Bitmap.Config.ARGB_8888);
             Canvas resultBitmapCanvas = new Canvas(resultBitmap);
             resultBitmapCanvas.drawBitmap(cuttedFirstBitmap, null, firstDstRect, mBitmapPaint);
             resultBitmapCanvas.drawBitmap(cuttedSecondBitmap, null, secondDstRect, mBitmapPaint);
             resultBitmapCanvas.drawBitmap(cuttedThirdBitmap, null, thirdDstRect, mBitmapPaint);
+            resultBitmapCanvas.drawLine(mSize / 2, 0, mSize / 2, mSize, mDividerPaint);
+            resultBitmapCanvas.drawLine(mSize / 2, mSize / 2, mSize, mSize / 2, mDividerPaint);
             mBitmapShader = new BitmapShader(resultBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
             mBitmapPaint.setShader(mBitmapShader);
         } else if (mFirstBitmap != null && mSecondBitmap != null && mThirdBitmap != null && mFourthBitmap != null) {
-            Bitmap cuttedFirstBitmap = ThumbnailUtils.extractThumbnail(mFirstBitmap, mSize / 2, mSize / 2);
-            Bitmap cuttedSecondBitmap = ThumbnailUtils.extractThumbnail(mSecondBitmap, mSize / 2, mSize / 2);
-            Bitmap cuttedThirdBitmap = ThumbnailUtils.extractThumbnail(mThirdBitmap, mSize / 2, mSize / 2);
-            Bitmap cuttedFourthBitmap = ThumbnailUtils.extractThumbnail(mFourthBitmap, mSize / 2, mSize / 2);
+            Bitmap cuttedFirstBitmap = ThumbnailUtils.extractThumbnail(mFirstBitmap, (mSize - mDividerWidth) / 2, (mSize - mDividerWidth) / 2);
+            Bitmap cuttedSecondBitmap = ThumbnailUtils.extractThumbnail(mSecondBitmap, (mSize - mDividerWidth) / 2, (mSize - mDividerWidth) / 2);
+            Bitmap cuttedThirdBitmap = ThumbnailUtils.extractThumbnail(mThirdBitmap, (mSize - mDividerWidth) / 2, (mSize - mDividerWidth) / 2);
+            Bitmap cuttedFourthBitmap = ThumbnailUtils.extractThumbnail(mFourthBitmap, (mSize - mDividerWidth) / 2, (mSize - mDividerWidth) / 2);
             Rect firstDstRect = new Rect();
-            firstDstRect.set(0, 0, mSize / 2, mSize / 2);
+            firstDstRect.set(0, 0, (mSize - mDividerWidth) / 2, (mSize - mDividerWidth) / 2);
             Rect secondDstRect = new Rect();
-            secondDstRect.set(mSize / 2, 0, mSize, mSize / 2);
+            secondDstRect.set((mSize + mDividerWidth) / 2, 0, mSize, (mSize - mDividerWidth) / 2);
             Rect thirdDstRect = new Rect();
-            thirdDstRect.set(0, mSize / 2, mSize / 2, mSize);
+            thirdDstRect.set(0, (mSize + mDividerWidth) / 2, (mSize - mDividerWidth) / 2, mSize);
             Rect fourthDstRect = new Rect();
-            fourthDstRect.set(mSize / 2, mSize / 2, mSize, mSize);
+            fourthDstRect.set((mSize + mDividerWidth) / 2, (mSize + mDividerWidth) / 2, mSize, mSize);
 
             Bitmap resultBitmap = Bitmap.createBitmap(mSize, mSize, Bitmap.Config.ARGB_8888);
             Canvas resultBitmapCanvas = new Canvas(resultBitmap);
@@ -176,6 +178,8 @@ public class GroupChatImageView extends ImageView {
             resultBitmapCanvas.drawBitmap(cuttedSecondBitmap, null, secondDstRect, mBitmapPaint);
             resultBitmapCanvas.drawBitmap(cuttedThirdBitmap, null, thirdDstRect, mBitmapPaint);
             resultBitmapCanvas.drawBitmap(cuttedFourthBitmap, null, fourthDstRect, mBitmapPaint);
+            resultBitmapCanvas.drawLine(mSize / 2, 0, mSize / 2, mSize, mDividerPaint);
+            resultBitmapCanvas.drawLine(0, mSize / 2, mSize, mSize / 2, mDividerPaint);
             mBitmapShader = new BitmapShader(resultBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
             mBitmapPaint.setShader(mBitmapShader);
         } else {
