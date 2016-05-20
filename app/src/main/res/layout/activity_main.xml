@@ -11,10 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        custom:firstImage="@drawable/me"
-        custom:secondImage="@drawable/me2"
-        custom:showDivider="true"
-        custom:thirdImage="@drawable/alex"
-        custom:fourthImage="@drawable/alex2"
-        custom:viewShape="circle" />
+        custom:cornerRadius="@dimen/activity_horizontal_margin"
+        custom:showDivider="false"
+        custom:viewShape="rounded_rectangle" />
+
+
 </RelativeLayout>
