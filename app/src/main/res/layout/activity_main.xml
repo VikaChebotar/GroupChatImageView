@@ -8,11 +8,14 @@
 
     <com.groupchatimageview.GroupChatImageView
         android:id="@+id/chatImageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        custom:showDivider="true"
+        android:paddingTop="30dp"
+        custom:cornerRadius="10dp"
         android:layout_centerInParent="true"
-        custom:cornerRadius="@dimen/activity_horizontal_margin"
-        custom:showDivider="false"
+        custom:firstImage="@drawable/alex"
+        custom:secondImage="@drawable/me"
         custom:viewShape="rounded_rectangle" />
 
 

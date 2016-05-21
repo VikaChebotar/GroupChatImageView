@@ -10,6 +10,5 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         GroupChatImageView imageView = (GroupChatImageView) findViewById(R.id.chatImageView);
-        imageView.setImageResource(R.drawable.alex);
     }
 }
