@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class GroupChatImageView extends ImageView {
     @ColorInt
     private int mDividerColor;
     private ShapeMode mShapeMode = ShapeMode.CIRCLE;
-
+    private boolean isRedrawingAutomatically = true;
     private Paint mBitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mDividerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Matrix mBitmapShaderMatrix = new Matrix();
@@ -44,6 +45,7 @@ public class GroupChatImageView extends ImageView {
     private int mImageSize;
     private int mAvailableWidth;
     private int mAvailableHeight;
+
 
     public enum ShapeMode {
         CIRCLE, ROUNDED_RECTANGLE;
@@ -58,6 +60,7 @@ public class GroupChatImageView extends ImageView {
         this(context, attrs, 0);
 
     }
+
 
     public GroupChatImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -108,17 +111,19 @@ public class GroupChatImageView extends ImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        int cx = mAvailableWidth / 2 + getPaddingLeft();
-        int cy = mAvailableHeight / 2 + getPaddingTop();
-        if (mShapeMode == ShapeMode.CIRCLE) {
-            canvas.drawCircle(cx, cy, mImageSize / 2, mBitmapPaint);
-        } else {
-            float left = cx - mImageSize / 2;
-            float top = cy - mImageSize / 2;
-            float right = cx + mImageSize / 2;
-            float bottom = cy + mImageSize / 2;
-            RectF rectF = new RectF(left, top, right, bottom);
-            canvas.drawRoundRect(rectF, mCornerRadius, mCornerRadius, mBitmapPaint);
+        if (mBitmapShader != null) {
+            int cx = mAvailableWidth / 2 + getPaddingLeft();
+            int cy = mAvailableHeight / 2 + getPaddingTop();
+            if (mShapeMode == ShapeMode.CIRCLE) {
+                canvas.drawCircle(cx, cy, mImageSize / 2, mBitmapPaint);
+            } else {
+                float left = cx - mImageSize / 2;
+                float top = cy - mImageSize / 2;
+                float right = cx + mImageSize / 2;
+                float bottom = cy + mImageSize / 2;
+                RectF rectF = new RectF(left, top, right, bottom);
+                canvas.drawRoundRect(rectF, mCornerRadius, mCornerRadius, mBitmapPaint);
+            }
         }
     }
 
@@ -144,7 +149,7 @@ public class GroupChatImageView extends ImageView {
                     resultBitmap = getResultBitmapForFourImages();
                     break;
                 default:
-                    mBitmapPaint.setColor(Color.TRANSPARENT);
+                    mBitmapShader = null;
                     break;
             }
             if (resultBitmap != null) {
@@ -153,7 +158,6 @@ public class GroupChatImageView extends ImageView {
                 mBitmapPaint.setShader(mBitmapShader);
             }
         }
-        invalidate();
     }
 
     private Bitmap getResultBitmapForTwoImages() {
@@ -267,7 +271,9 @@ public class GroupChatImageView extends ImageView {
     public void setCornerRadius(int cornerRadius) {
         if (cornerRadius != mCornerRadius) {
             this.mCornerRadius = cornerRadius;
-            invalidate();
+            if (isRedrawingAutomatically) {
+                invalidate();
+            }
         }
     }
 
@@ -299,6 +305,14 @@ public class GroupChatImageView extends ImageView {
         }
     }
 
+    public boolean isRedrawingAutomatically() {
+        return isRedrawingAutomatically;
+    }
+
+    public void setRedrawingAutomatically(boolean redrawingAutomatically) {
+        isRedrawingAutomatically = redrawingAutomatically;
+    }
+
     public int getDividerColor() {
         return mDividerColor;
     }
@@ -318,7 +332,9 @@ public class GroupChatImageView extends ImageView {
     public void setShapeMode(ShapeMode shapeMode) {
         if (!shapeMode.equals(mShapeMode)) {
             this.mShapeMode = shapeMode;
-            invalidate();
+            if (isRedrawingAutomatically) {
+                invalidate();
+            }
         }
     }
 
@@ -354,27 +370,39 @@ public class GroupChatImageView extends ImageView {
         if (mBitmaps.isEmpty() && getDrawable() instanceof BitmapDrawable) {
             mBitmaps.add(((BitmapDrawable) getDrawable()).getBitmap());
             setupBitmapShader();
+            if (isRedrawingAutomatically) {
+                invalidate();
+            }
         }
     }
 
     public void clearBitmaps() {
-        for (Bitmap b : mBitmaps) {
-            b.recycle();
-            b = null;
-        }
+//        for (Bitmap b : mBitmaps) {
+//            b.recycle();
+//        }
         mBitmaps.clear();
         setupBitmapShader();
+        if (isRedrawingAutomatically) {
+            invalidate();
+        }
     }
 
     public void setBitmaps(List<Bitmap> bitmaps) {
-        mBitmaps = bitmaps.subList(0, Math.min(bitmaps.size(), MAX_IMAGES_IN_VIEW));
+        mBitmaps.clear();
+        mBitmaps.addAll(bitmaps.subList(0, Math.min(bitmaps.size(), MAX_IMAGES_IN_VIEW)));
         setupBitmapShader();
+        if (isRedrawingAutomatically) {
+            invalidate();
+        }
     }
 
     public void addBitmap(Bitmap bitmap) {
         if (mBitmaps.size() < MAX_IMAGES_IN_VIEW) {
             mBitmaps.add(bitmap);
             setupBitmapShader();
+            if (isRedrawingAutomatically) {
+                invalidate();
+            }
         }
     }
 

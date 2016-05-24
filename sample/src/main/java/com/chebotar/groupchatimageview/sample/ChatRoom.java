@@ -1,8 +1,5 @@
 package com.chebotar.groupchatimageview.sample;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
 /**
@@ -10,38 +7,30 @@ import java.util.List;
  */
 public class ChatRoom {
     private int id;
-    private String name;
-    private String label;
-    @SerializedName("participants_info")
-    private List<ChatFriend> participants;
-    @SerializedName("last_message")
+    private List<User> participants;
     private String lastMessage;
-    @SerializedName("last_message_timestamp")
-    private String lastMessageTimestamp;
-    @Expose
-    private int unseen;
+    private String lastMessageTime;
 
-    public String getName() {
-        return name;
+    public ChatRoom(int id, List<User> participants, String lastMessage, String lastMessageTime) {
+        this.id = id;
+        this.participants = participants;
+        this.lastMessage = lastMessage;
+        this.lastMessageTime = lastMessageTime;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public int getId() {
+        return id;
     }
 
-    public String getLabel() {
-        return label;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public List<ChatFriend> getParticipants() {
+    public List<User> getParticipants() {
         return participants;
     }
 
-    public void setParticipants(List<ChatFriend> participants) {
+    public void setParticipants(List<User> participants) {
         this.participants = participants;
     }
 
@@ -53,27 +42,11 @@ public class ChatRoom {
         this.lastMessage = lastMessage;
     }
 
-    public String getLastMessageTimestamp() {
-        return lastMessageTimestamp;
+    public String getLastMessageTime() {
+        return lastMessageTime;
     }
 
-    public void setLastMessageTimestamp(String lastMessageTimestamp) {
-        this.lastMessageTimestamp = lastMessageTimestamp;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getUnseen() {
-        return unseen;
-    }
-
-    public void setUnseen(int unseen) {
-        this.unseen = unseen;
+    public void setLastMessageTime(String lastMessageTime) {
+        this.lastMessageTime = lastMessageTime;
     }
 }
