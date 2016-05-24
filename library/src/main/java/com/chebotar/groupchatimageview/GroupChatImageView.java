@@ -377,9 +377,6 @@ public class GroupChatImageView extends ImageView {
     }
 
     public void clearBitmaps() {
-//        for (Bitmap b : mBitmaps) {
-//            b.recycle();
-//        }
         mBitmaps.clear();
         setupBitmapShader();
         if (isRedrawingAutomatically) {
@@ -399,6 +396,16 @@ public class GroupChatImageView extends ImageView {
     public void addBitmap(Bitmap bitmap) {
         if (mBitmaps.size() < MAX_IMAGES_IN_VIEW) {
             mBitmaps.add(bitmap);
+            setupBitmapShader();
+            if (isRedrawingAutomatically) {
+                invalidate();
+            }
+        }
+    }
+
+    public void replaceBitmap(int position, Bitmap bitmap) {
+        if (mBitmaps.size() > position) {
+            mBitmaps.set(position, bitmap);
             setupBitmapShader();
             if (isRedrawingAutomatically) {
                 invalidate();

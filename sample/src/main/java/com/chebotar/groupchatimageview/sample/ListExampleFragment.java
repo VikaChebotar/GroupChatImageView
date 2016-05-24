@@ -23,7 +23,7 @@ public class ListExampleFragment extends Fragment {
         View view = inflater.inflate(R.layout.list_fragment, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        ListExampleAdapter adapter = new ListExampleAdapter(Util.chatRooms, getActivity());
+        GlideListExampleAdapter adapter = new GlideListExampleAdapter(Util.chatRooms, getActivity());
         recyclerView.setAdapter(adapter);
         return view;
     }
